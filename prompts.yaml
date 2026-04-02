@@ -1,0 +1,25 @@
+prompts:
+  - id: p1
+    text: "The capital of France is"
+  - id: p2
+    text: "2 + 2 equals"
+  - id: p3
+    text: "The opposite of hot is"
+  - id: p4
+    text: "A cat says"
+  - id: p5
+    text: "Water freezes at"
+  - id: p6
+    text: "The color of the sky is"
+  - id: p7
+    text: "The first day of the week is"
+  - id: p8
+    text: "Python is a"
+  - id: p9
+    text: "The largest planet is"
+  - id: p10
+    text: "A triangle has"
+  - id: p11
+    text: "The chemical symbol for water is"
+  - id: p12
+    text: "The moon orbits"

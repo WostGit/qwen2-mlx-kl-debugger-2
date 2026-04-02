@@ -1,0 +1,51 @@
+name: macos-mlx-kl-debugger
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  run-experiments:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: requirements.txt
+
+      - name: Cache HuggingFace models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-hf-
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && pip install -r requirements.txt
+
+      - name: Run toy experiment first
+        run: python scripts/run_toy.py
+
+      - name: Run Qwen experiment second
+        run: python scripts/run_qwen.py --debug-llm
+
+      - name: Run strict summary and plot generation
+        run: |
+          python scripts/summarize_results.py
+          python scripts/plot_results.py
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: qwen2-mlx-kl-debugger-artifacts
+          path: |
+            results/**/*.csv
+            results/**/*.jsonl
+            results/**/*.png
+            results/*.csv
+            results/*.png
