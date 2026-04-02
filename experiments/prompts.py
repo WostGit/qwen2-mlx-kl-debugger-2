@@ -1,0 +1,36 @@
+"""Fixed prompt sets used by all experiments."""
+
+TOY_PROMPTS = [f"toy_prompt_{i}" for i in range(3000)]
+
+QWEN_PROMPTS = [
+    "The capital of France is",
+    "Two plus two equals",
+    "The opposite of hot is",
+    "A healthy breakfast could include",
+    "In one word, the ocean is",
+    "The largest planet in our solar system is",
+    "Python is often used for",
+    "The color of grass is usually",
+    "If it rains, you might need",
+    "The author of Hamlet is",
+    "Machine learning helps with",
+    "The boiling point of water in Celsius is",
+    "A triangle has this many sides:",
+    "The fastest land animal is",
+    "When tired, people usually",
+    "The moon orbits the",
+    "An example of renewable energy is",
+    "The first day of the week can be",
+    "To open a locked door, you often use",
+    "Coffee is commonly served in a",
+    "A baby cat is called a",
+    "Earth is the ___ planet from the Sun",
+    "The process plants use to make food is",
+    "A common web browser is",
+    "Water freezes at",
+    "A group of wolves is called a",
+    "The tallest mammal is",
+    "In music, a piano is a",
+    "The chemical symbol for gold is",
+    "A calendar year has",
+]

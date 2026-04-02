@@ -1,0 +1,54 @@
+name: macos-day1-kl-debug
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["**"]
+
+jobs:
+  run-day1:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Cache models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-qwen2-05b
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run toy experiment
+        run: python scripts/run_toy.py
+
+      - name: Run qwen experiment (debug mode)
+        run: python scripts/run_qwen.py --debug-llm
+
+      - name: Generate summary and plots
+        run: |
+          python scripts/generate_summary.py
+          python scripts/make_plots.py
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: day1-results
+          path: |
+            results/*.csv
+            results/*.png
+            results/debug/*.jsonl
+            results/debug/*.csv
