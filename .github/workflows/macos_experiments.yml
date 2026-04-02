@@ -1,0 +1,63 @@
+name: qwen2-mlx-kl-debugger
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  run-experiments:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Cache Hugging Face model downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run toy experiment first
+        run: |
+          python scripts/run_toy.py --budgets 64,128,256,512,1024 --seeds 0,1,2 --out-csv results/toy_results_raw.csv
+
+      - name: Run qwen experiment second
+        run: |
+          python scripts/run_qwen.py --budgets 64,128,256,512,1024 --seeds 0,1 --debug-llm --out-csv results/qwen_results_raw.csv --debug-dir results/debug --nan-report-csv results/qwen_nan_report.csv --vocab-check-csv results/qwen_vocab_alignment_check.csv
+
+      - name: Build merged raw, summary, and plots
+        run: |
+          python - <<'PY'
+          import pandas as pd
+          toy = pd.read_csv('results/toy_results_raw.csv')
+          qwen = pd.read_csv('results/qwen_results_raw.csv')
+          pd.concat([toy, qwen], ignore_index=True).to_csv('results/results_raw.csv', index=False)
+          PY
+          python scripts/summarize_results.py --raw-csv results/results_raw.csv --out-csv results/results_summary.csv
+          python scripts/plot_results.py --raw-csv results/results_raw.csv --out-dir results
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: qwen2-mlx-kl-debugger-artifacts
+          path: |
+            results/*.csv
+            results/*.png
+            results/debug/*.jsonl
+            results/debug/*.csv
