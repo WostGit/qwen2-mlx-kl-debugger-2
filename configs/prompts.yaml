@@ -1,0 +1,25 @@
+prompts:
+  - id: p01
+    text: "The capital of France is"
+  - id: p02
+    text: "2 + 2 equals"
+  - id: p03
+    text: "The opposite of hot is"
+  - id: p04
+    text: "In one word, Python is"
+  - id: p05
+    text: "The color of grass is"
+  - id: p06
+    text: "The largest planet in our solar system is"
+  - id: p07
+    text: "A synonym for quick is"
+  - id: p08
+    text: "Water freezes at"
+  - id: p09
+    text: "The author of Hamlet is"
+  - id: p10
+    text: "Machine learning can be used for"
+  - id: p11
+    text: "The past tense of run is"
+  - id: p12
+    text: "An example of a mammal is"

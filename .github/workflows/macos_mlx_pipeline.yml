@@ -1,0 +1,53 @@
+name: macos-mlx-kl-debugger
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["**"]
+
+jobs:
+  run-experiments:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Cache model downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-qwen2-0.5b
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run toy experiment
+        run: python scripts/run_toy.py
+
+      - name: Run qwen experiment
+        run: python scripts/run_qwen.py --debug-llm
+
+      - name: Build summary + plots (strict checks)
+        run: python scripts/run_summary.py
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: qwen2-mlx-kl-debugger-artifacts
+          path: |
+            results/**/*.csv
+            results/**/*.jsonl
+            results/**/*.png
+            results/*.csv
+            results/*.png
